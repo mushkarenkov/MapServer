@@ -3968,7 +3968,8 @@ int msMSSQL2008LayerNextShape(layerObj *layer, shapeObj *shape) {
   return MS_FAILURE;
 }
 
-int msMSSQL2008LayerGetShape(layerObj *layer, shapeObj *shape, long record) {
+// int msMSSQL2008LayerGetShape(layerObj *layer, shapeObj *shape, long record) {
+int msMSSQL2008LayerGetShape(layerObj *layer, shapeObj *shape, resultObj *record) {
   msSetError(MS_QUERYERR,
              "msMSSQL2008LayerGetShape called but unimplemented!(mapserver not "
              "compiled with MSSQL2008 support)",

@@ -740,7 +740,8 @@ int msCopyLabelCache(labelCacheObj *dst, const labelCacheObj *src) {
   MS_COPYSTELEM(numlabels);
 
   for (p = 0; p < MS_MAX_LABEL_PRIORITY; p++) {
-    msCopyLabelCacheSlot(&(dst->slots[p]), &(src->slots[p]));
+// TOL: conflict with QT SLOTS
+    msCopyLabelCacheSlot(&(dst->_slots[p]), &(src->_slots[p]));
   }
 
   return MS_SUCCESS;

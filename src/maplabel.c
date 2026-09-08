@@ -311,7 +311,8 @@ int msAddLabelGroup(mapObj *map, imageObj *image, layerObj *layer,
   else if (priority > MS_MAX_LABEL_PRIORITY)
     priority = MS_MAX_LABEL_PRIORITY;
 
-  cacheslot = &(map->labelcache.slots[priority - 1]);
+// TOL: conflict with QT SLOTS
+  cacheslot = &(map->labelcache._slots[priority - 1]);
 
   if (cacheslot->numlabels ==
       cacheslot->cachesize) { /* just add it to the end */
@@ -538,7 +539,8 @@ int msAddLabel(mapObj *map, imageObj *image, labelObj *label, int layerindex,
   else if (label->priority > MS_MAX_LABEL_PRIORITY)
     label->priority = MS_MAX_LABEL_PRIORITY;
 
-  cacheslot = &(map->labelcache.slots[label->priority - 1]);
+// TOL: conflict with QT SLOTS
+  cacheslot = &(map->labelcache._slots[label->priority - 1]);
 
   if (cacheslot->numlabels ==
       cacheslot->cachesize) { /* just add it to the end */
@@ -799,7 +801,8 @@ int msTestLabelCacheCollisions(mapObj *map, labelCacheMemberObj *cachePtr,
   */
   for (p = current_priority; p < MS_MAX_LABEL_PRIORITY; p++) {
     labelCacheSlotObj *markerslot;
-    markerslot = &(labelcache->slots[p]);
+// TOL: conflict with QT SLOTS
+    markerslot = &(labelcache->_slots[p]);
 
     for (ll = 0; ll < markerslot->nummarkers; ll++) {
       if (!(p == current_priority &&
@@ -891,6 +894,7 @@ int msFreeFontSet(fontSetObj *fontset) {
 }
 
 int msLoadFontSet(fontSetObj *fontset, mapObj *map) {
+#ifndef MS_EMBEDDED
   VSILFILE *stream;
   const char *line;
   char *path;
@@ -993,6 +997,7 @@ int msLoadFontSet(fontSetObj *fontset, mapObj *map) {
   VSIFCloseL(stream); /* close the file */
   free(path);
 
+#endif // MS_EMBEDDED
   return (0);
 }
 

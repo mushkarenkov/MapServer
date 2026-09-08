@@ -30,6 +30,8 @@
 #ifndef MAPOWSCOMMON_H
 #define MAPOWSCOMMON_H
 
+#ifndef MS_EMBEDDED
+
 #ifdef USE_LIBXML2
 
 #include <libxml/parser.h>
@@ -216,5 +218,7 @@ int msOWSCommonNegotiateVersion(int requested_version,
 #ifdef __cplusplus
 } /* extern C */
 #endif
+
+#endif // MS_EMBEDDED
 
 #endif /* MAPOWSCOMMON_H */

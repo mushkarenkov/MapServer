@@ -745,6 +745,7 @@ int msSetLayersdrawingOrder(mapObj *self, int *panIndexes) {
    Function to support mapscript mapObj::loadOWSParameters
    ========================================================================= */
 
+#ifndef MS_EMBEDDED
 int msMapLoadOWSParameters(mapObj *map, cgiRequestObj *request,
                            const char *wmtver) {
 #ifdef USE_WMS_SVR
@@ -780,3 +781,5 @@ int msMapLoadOWSParameters(mapObj *map, cgiRequestObj *request,
   return MS_FAILURE;
 #endif
 }
+
+#endif // MSLITE

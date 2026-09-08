@@ -1092,6 +1092,7 @@ int msSaveImage(mapObj *map, imageObj *img, const char *filename) {
   }
 
   if (img) {
+#ifndef MS_EMBEDDED
     if (MS_DRIVER_GDAL(img->format)) {
       if (map != NULL && filename != NULL)
         nReturnVal = msSaveImageGDAL(
@@ -1099,6 +1100,7 @@ int msSaveImage(mapObj *map, imageObj *img, const char *filename) {
       else
         nReturnVal = msSaveImageGDAL(map, img, filename);
     } else
+#endif // MS_EMBEDDED
 
         if (MS_RENDERER_PLUGIN(img->format)) {
       rendererVTableObj *renderer = img->format->vtable;
@@ -2146,6 +2148,7 @@ void msCleanup() {
   }
   msyylex_destroy();
 
+#ifndef MS_EMBEDDED
   msOGRCleanup();
   msGDALCleanup();
 
@@ -2154,6 +2157,7 @@ void msCleanup() {
   /* Cleanup some GDAL global resources in particular */
   GDALDestroy();
   msReleaseLock(TLOCK_GDAL);
+#endif // MS_EMBEDDED
 
   msSetPROJ_DATA(NULL, NULL);
   msProjectionContextPoolCleanup();
@@ -2188,7 +2192,9 @@ void msCleanup() {
   msDebugCleanup();
 
   /* Clean up the vtable factory */
+#ifndef MS_EMBEDDED
   msPluginFreeVirtualTableFactory();
+#endif // MS_EMBEDDED
 }
 
 /************************************************************************/
@@ -2576,6 +2582,7 @@ void *msSmallCalloc(size_t nCount, size_t nSize) {
 ** Returns a newly allocated string that should be freed by the caller or
 ** NULL in case of error.
 */
+#ifndef MS_EMBEDDED
 char *msBuildOnlineResource(mapObj *map, cgiRequestObj *req) {
   (void)map;
   char *online_resource = NULL;
@@ -2655,6 +2662,7 @@ char *msBuildOnlineResource(mapObj *map, cgiRequestObj *req) {
 
   return online_resource;
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*                             msIntegerInArray()                        */

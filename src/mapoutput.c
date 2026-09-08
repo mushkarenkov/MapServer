@@ -349,6 +349,7 @@ outputFormatObj *msCreateDefaultOutputFormat(mapObj *map, const char *driver,
   }
 #endif
 
+#ifndef MS_EMBEDDED
   else if (strncasecmp(driver, "gdal/", 5) == 0) {
     if (!name)
       name = driver + 5;
@@ -378,6 +379,7 @@ outputFormatObj *msCreateDefaultOutputFormat(mapObj *map, const char *driver,
       format = NULL;
     }
   }
+#endif // MS_EMBEDDED
 
   else if (strcasecmp(driver, "imagemap") == 0) {
     if (!name)
@@ -851,10 +853,12 @@ void msGetOutputFormatMimeListImg(mapObj *map, const char **mime_list,
   outputFormatObj *format;
 
   msApplyDefaultOutputFormats(map);
+#ifndef MS_EMBEDDED
   format_list = msOWSLookupMetadata(&(map->web.metadata), "M",
                                     "getlegendgraphic_formatlist");
   if (format_list && strlen(format_list) > 0)
     tokens = msStringSplit(format_list, ',', &numtokens);
+#endif // MS_EMBEDDED
 
   if (tokens && numtokens > 0) {
     for (j = 0; j < numtokens; j++) {
@@ -890,6 +894,7 @@ void msGetOutputFormatMimeListImg(mapObj *map, const char **mime_list,
 /*                  msGetOutputFormatMimeListWMS()                      */
 /************************************************************************/
 
+#ifndef MS_EMBEDDED
 void msGetOutputFormatMimeListWMS(mapObj *map, const char **mime_list,
                                   int max_mime) {
   int mime_count = 0, i, j;
@@ -939,6 +944,7 @@ void msGetOutputFormatMimeListWMS(mapObj *map, const char **mime_list,
   if (tokens)
     msFreeCharArray(tokens, numtokens);
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*                       msOutputFormatValidate()                       */
@@ -1071,6 +1077,7 @@ int msInitializeRendererVTable(outputFormatObj *format) {
   switch (format->renderer) {
   case MS_RENDER_WITH_AGG:
     return msPopulateRendererVTableAGG(format->vtable);
+#ifndef MS_EMBEDDED
   case MS_RENDER_WITH_UTFGRID:
     return msPopulateRendererVTableUTFGrid(format->vtable);
 #ifdef USE_PBF
@@ -1096,6 +1103,7 @@ int msInitializeRendererVTable(outputFormatObj *format) {
 
   case MS_RENDER_WITH_OGR:
     return msPopulateRendererVTableOGR(format->vtable);
+#endif // MS_EMBEDDED
 
   default:
     msSetError(MS_MISCERR, "unsupported RendererVtable renderer %d",

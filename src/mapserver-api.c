@@ -3,7 +3,8 @@
 mapObj *umnms_new_map(char *filename) {
   mapObj *map = NULL;
   if (filename) {
-    map = msLoadMap(filename, NULL);
+// TOL: Add NULL variable
+    map = msLoadMap(filename, NULL, NULL);
   } else {
     map = (mapObj *)msSmallCalloc(sizeof(mapObj), 1);
     if (initMap(map) == -1) {

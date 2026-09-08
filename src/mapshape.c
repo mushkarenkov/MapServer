@@ -2162,8 +2162,10 @@ static const char *msTiledSHPLoadEntry(layerObj *layer, int i, char *tilename,
     int idx = msDBFGetItemIndex(tSHP->tileshpfile->hDBF, layer->tilesrs);
     const char *pszWKT =
         msDBFReadStringAttribute(tSHP->tileshpfile->hDBF, i, idx);
+#ifndef MS_EMBEDDED
     IGNORE_RET_VAL(
         msOGCWKT2ProjectionObj(pszWKT, &(tSHP->sTileProj), layer->debug));
+#endif // MS_EMBEDDED
   }
 
   if (!layer->data) /* assume whole filename is in attribute field */
@@ -2795,8 +2797,10 @@ static void msSHPPassThroughFieldDefinitions(layerObj *layer, DBFHandle hDBF) {
       break;
     }
 
+#ifndef MS_EMBEDDED
     msUpdateGMLFieldMetadata(layer, item, gml_type, gml_width, gml_precision,
                              0);
+#endif // MS_EMBEDDED
   }
 }
 
@@ -2819,9 +2823,11 @@ int msTiledSHPLayerGetItems(layerObj *layer) {
   /* -------------------------------------------------------------------- */
   /*      consider populating the field definitions in metadata.          */
   /* -------------------------------------------------------------------- */
+#ifndef MS_EMBEDDED
   if ((value = msOWSLookupMetadata(&(layer->metadata), "G", "types")) != NULL &&
       strcasecmp(value, "auto") == 0)
     msSHPPassThroughFieldDefinitions(layer, tSHP->shpfile->hDBF);
+#endif // MS_EMBEDDED
 
   return msTiledSHPLayerInitItemInfo(layer);
 }
@@ -2956,10 +2962,12 @@ int msSHPLayerOpen(layerObj *layer) {
         if (OSRMorphFromESRI(hSRS) == OGRERR_NONE) {
           char *pszWKT = NULL;
           if (OSRExportToWkt(hSRS, &pszWKT) == OGRERR_NONE) {
+#ifndef MS_EMBEDDED
             if (msOGCWKT2ProjectionObj(pszWKT, &(layer->projection),
                                        layer->debug) == MS_SUCCESS) {
               bOK = MS_TRUE;
             }
+#endif // MS_EMBEDDED
           }
           CPLFree(pszWKT);
         }
@@ -3113,9 +3121,11 @@ int msSHPLayerGetItems(layerObj *layer) {
   /* -------------------------------------------------------------------- */
   /*      consider populating the field definitions in metadata.          */
   /* -------------------------------------------------------------------- */
+#ifndef MS_EMBEDDED
   if ((value = msOWSLookupMetadata(&(layer->metadata), "G", "types")) != NULL &&
       strcasecmp(value, "auto") == 0)
     msSHPPassThroughFieldDefinitions(layer, shpfile->hDBF);
+#endif // MS_EMBEDDED
 
   return msLayerInitItemInfo(layer);
 }

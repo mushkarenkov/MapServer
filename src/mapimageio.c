@@ -31,7 +31,10 @@
 #include <png.h>
 #include <setjmp.h>
 #include <assert.h>
+// TOL: NO JPEG Support with offline
+#ifndef MS_EMBEDDED
 #include <jpeglib.h>
+#endif // MS_EMBEDDED
 #include <stdlib.h>
 
 #ifdef USE_GIF
@@ -60,6 +63,7 @@ static void png_flush_data(png_structp png_ptr) {
   /* do nothing */
 }
 
+#ifndef MS_EMBEDDED
 typedef struct {
   struct jpeg_destination_mgr pub;
   unsigned char *data;
@@ -245,6 +249,7 @@ int saveAsJPEG(mapObj *map, rasterBufferObj *rb, streamInfo *info,
   free(rowdata);
   return MS_SUCCESS;
 }
+#endif // MS_EMBEDDED
 
 /*
  * sort a given list of rgba entries so that all the opaque pixels are at the
@@ -740,12 +745,15 @@ int msSaveRasterBuffer(mapObj *map, rasterBufferObj *rb, FILE *stream,
     info.buffer = NULL;
 
     return saveAsPNG(map, rb, &info, format);
+// TOL: NO JPEG Support with offline
+#ifndef MS_EMBEDDED
   } else if (strcasestr(format->driver, "/jpeg")) {
     streamInfo info;
     info.fp = stream;
     info.buffer = NULL;
 
     return saveAsJPEG(map, rb, &info, format);
+#endif // MS_EMBEDDED
   } else {
     msSetError(MS_MISCERR, "unsupported image format\n",
                "msSaveRasterBuffer()");
@@ -760,11 +768,14 @@ int msSaveRasterBufferToBuffer(rasterBufferObj *data, bufferObj *buffer,
     info.fp = NULL;
     info.buffer = buffer;
     return saveAsPNG(NULL, data, &info, format);
+// TOL: NO JPEG Support with offline
+#ifndef MS_EMBEDDED
   } else if (strcasestr(format->driver, "/jpeg")) {
     streamInfo info;
     info.fp = NULL;
     info.buffer = buffer;
     return saveAsJPEG(NULL, data, &info, format);
+#endif // MS_EMBEDDED
   } else {
     msSetError(MS_MISCERR, "unsupported image format\n",
                "msSaveRasterBuffer()");

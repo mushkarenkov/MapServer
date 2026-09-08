@@ -727,11 +727,15 @@ int msProcessProjection(projectionObj *p) {
         char sep = ':';
 #endif
         char **paths = msStringSplit(ms_proj_data, sep, &num_tokens);
+#ifndef MS_EMBEDDED
         proj_context_set_search_paths(p->proj_ctx->proj_ctx, num_tokens,
                                       (const char *const *)paths);
+#endif // MS_EMBEDDED
         msFreeCharArray(paths, num_tokens);
       } else {
+#ifndef MS_EMBEDDED
         proj_context_set_search_paths(p->proj_ctx->proj_ctx, 0, NULL);
+#endif // MS_EMBEDDED
       }
     }
     msReleaseLock(TLOCK_PROJ);
@@ -1757,6 +1761,7 @@ int msProjectRectAsPolygon(reprojectionObj *reprojector, rectObj *rect) {
 
   msAddLineDirectly(&polygonObj, &ring);
 
+#ifndef MS_EMBEDDED
 #ifdef notdef
   FILE *wkt = fopen("/tmp/www-before.wkt", "w");
   char *tmp = msShapeToWKT(&polygonObj);
@@ -1764,6 +1769,7 @@ int msProjectRectAsPolygon(reprojectionObj *reprojector, rectObj *rect) {
   free(tmp);
   fclose(wkt);
 #endif
+#endif // MS_EMBEDDED
 
   /* -------------------------------------------------------------------- */
   /*      Attempt to reproject.                                           */
@@ -1776,6 +1782,7 @@ int msProjectRectAsPolygon(reprojectionObj *reprojector, rectObj *rect) {
     return msProjectRectGrid(reprojector, rect);
   }
 
+#ifndef MS_EMBEDDED
 #ifdef notdef
   wkt = fopen("/tmp/www-after.wkt", "w");
   tmp = msShapeToWKT(&polygonObj);
@@ -1783,6 +1790,7 @@ int msProjectRectAsPolygon(reprojectionObj *reprojector, rectObj *rect) {
   free(tmp);
   fclose(wkt);
 #endif
+#endif // MS_EMBEDDED
 
   /* -------------------------------------------------------------------- */
   /*      Collect bounds.                                                 */
@@ -2201,6 +2209,7 @@ void msSetPROJ_DATA(const char *proj_data, const char *pszRelToPath)
 
   msReleaseLock(TLOCK_PROJ);
 
+#ifndef MS_EMBEDDED
   if (ms_proj_data != NULL) {
 #ifdef _WIN32
     const char *sep = ";";
@@ -2211,6 +2220,7 @@ void msSetPROJ_DATA(const char *proj_data, const char *pszRelToPath)
     OSRSetPROJSearchPaths((const char *const *)papszPaths);
     CSLDestroy(papszPaths);
   }
+#endif // MS_EMBEDDED
 
   if (extended_path)
     msFree(extended_path);

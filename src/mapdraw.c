@@ -976,10 +976,12 @@ int msDrawLayer(mapObj *map, layerObj *layer, imageObj *image) {
 #else
     retcode = MS_FAILURE;
 #endif
+#ifndef MS_EMBEDDED
   } else if (layer->type == MS_LAYER_RASTER) {
     retcode = msDrawRasterLayer(map, layer, image_draw);
   } else if (layer->type == MS_LAYER_CHART) {
     retcode = msDrawChartLayer(map, layer, image_draw);
+#endif // MS_EMBEDDED
   } else { /* must be a Vector layer */
     retcode = msDrawVectorLayer(map, layer, image_draw);
   }
@@ -1146,6 +1148,7 @@ int msDrawVectorLayer(mapObj *map, layerObj *layer, imageObj *image) {
     if ((map->projection.numargs > 0) && (layer->projection.numargs > 0)) {
       int bDone = MS_FALSE;
 
+#ifndef MS_EMBEDDED
       if (layer->connectiontype == MS_UVRASTER) {
         /* Nasty hack to make msUVRASTERLayerWhichShapes() aware that the */
         /* original area of interest is (map->extent, map->projection)... */
@@ -1155,6 +1158,7 @@ int msDrawVectorLayer(mapObj *map, layerObj *layer, imageObj *image) {
         searchrect = msUVRASTERGetSearchRect(layer, map);
         bDone = MS_TRUE;
       }
+#endif // MS_EMBEDDED
 
       if (!bDone)
         msProjectRect(
@@ -1170,9 +1174,11 @@ int msDrawVectorLayer(mapObj *map, layerObj *layer, imageObj *image) {
 
   status = msLayerWhichShapes(layer, searchrect, MS_FALSE);
 
+#ifndef MS_EMBEDDED
   if (layer->connectiontype == MS_UVRASTER) {
     msUVRASTERLayerUseMapExtentAndProjectionForNextWhichShapes(layer, NULL);
   }
+#endif // MS_EMBEDDED
 
   if (status == MS_DONE) { /* no overlap */
     msLayerClose(layer);
@@ -1845,6 +1851,7 @@ int msDrawQueryLayer(mapObj *map, layerObj *layer, imageObj *image) {
   return (MS_SUCCESS);
 }
 
+#ifndef MS_EMBEDDED
 /**
  * msDrawRasterLayerPlugin()
  */
@@ -1920,6 +1927,7 @@ int msDrawRasterLayer(mapObj *map, layerObj *layer, imageObj *image) {
   msLayerRestoreFromScaletokens(layer);
   return rv;
 }
+#endif // MS_EMBEDDED
 
 /**
  * msDrawWMSLayer()
@@ -2990,7 +2998,8 @@ int msDrawOffsettedLabels(imageObj *image, mapObj *map, int priority) {
   pointObj *scratch_points = NULL;
   int num_allocated_scratch_points = 0;
   assert(MS_RENDERER_PLUGIN(image->format));
-  cacheslot = &(labelcache->slots[priority]);
+// TOL: conflict with QT SLOTS
+  cacheslot = &(labelcache->_slots[priority]);
   scratch.poly = &scratch_line;
 
   for (l = cacheslot->numlabels - 1; l >= 0; l--) {
@@ -3484,7 +3493,8 @@ int msDrawLabelCache(mapObj *map, imageObj *image) {
 
       for (priority = MS_MAX_LABEL_PRIORITY - 1; priority >= 0; priority--) {
         labelCacheSlotObj *cacheslot;
-        cacheslot = &(map->labelcache.slots[priority]);
+// TOL: conflict with QT SLOTS
+        cacheslot = &(map->labelcache._slots[priority]);
 
         for (l = cacheslot->numlabels - 1; l >= 0; l--) {
           cachePtr =
@@ -4146,7 +4156,8 @@ int msDrawLabelCache(mapObj *map, imageObj *image) {
       tstyle.color.blue = 0;
       for (priority = MS_MAX_LABEL_PRIORITY - 1; priority >= 0; priority--) {
         labelCacheSlotObj *cacheslot;
-        cacheslot = &(map->labelcache.slots[priority]);
+// TOL: conflict with QT SLOTS
+        cacheslot = &(map->labelcache._slots[priority]);
 
         for (l = cacheslot->numlabels - 1; l >= 0; l--) {
           cachePtr =

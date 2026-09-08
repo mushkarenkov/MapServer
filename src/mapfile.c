@@ -6303,13 +6303,14 @@ int initMap(mapObj *map) {
   map->palette.numcolors = 0;
 
   for (i = 0; i < MS_MAX_LABEL_PRIORITY; i++) {
-    map->labelcache.slots[i].labels =
+// TOL: conflict with QT SLOTS
+    map->labelcache._slots[i].labels =
         NULL; /* cache is initialize at draw time */
-    map->labelcache.slots[i].cachesize = 0;
-    map->labelcache.slots[i].numlabels = 0;
-    map->labelcache.slots[i].markers = NULL;
-    map->labelcache.slots[i].markercachesize = 0;
-    map->labelcache.slots[i].nummarkers = 0;
+    map->labelcache._slots[i].cachesize = 0;
+    map->labelcache._slots[i].numlabels = 0;
+    map->labelcache._slots[i].markers = NULL;
+    map->labelcache._slots[i].markercachesize = 0;
+    map->labelcache._slots[i].nummarkers = 0;
   }
 
   map->fontset.filename = NULL;
@@ -6450,7 +6451,8 @@ int msFreeLabelCache(labelCacheObj *cache) {
   int p;
 
   for (p = 0; p < MS_MAX_LABEL_PRIORITY; p++) {
-    if (msFreeLabelCacheSlot(&(cache->slots[p])) != MS_SUCCESS)
+// TOL: conflict with QT SLOTS
+    if (msFreeLabelCacheSlot(&(cache->_slots[p])) != MS_SUCCESS)
       return MS_FAILURE;
   }
 
@@ -6490,7 +6492,8 @@ int msInitLabelCache(labelCacheObj *cache) {
   int p;
 
   for (p = 0; p < MS_MAX_LABEL_PRIORITY; p++) {
-    if (msInitLabelCacheSlot(&(cache->slots[p])) != MS_SUCCESS)
+// TOL: conflict with QT SLOTS
+    if (msInitLabelCacheSlot(&(cache->_slots[p])) != MS_SUCCESS)
       return MS_FAILURE;
   }
   cache->gutter = 0;
@@ -6899,7 +6902,7 @@ static bool msGetCWD(char *szBuffer, size_t nBufferSize,
  * Apply any SLD styles referenced in a LAYER's STYLEITEM
  */
 static void applyStyleItemToLayer(mapObj *map) {
-
+#ifndef MS_EMBEDDED
   for (int i = 0; i < map->numlayers; i++) {
     layerObj *layer = GET_LAYER(map, i);
 
@@ -6914,6 +6917,7 @@ static void applyStyleItemToLayer(mapObj *map) {
       }
     }
   }
+#endif // MS_EMBEDDED
 }
 
 /*

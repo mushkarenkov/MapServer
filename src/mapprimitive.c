@@ -64,11 +64,14 @@ void msPrintShape(shapeObj *p) {
 shapeObj *msShapeFromWKT(const char *string) {
 #ifdef USE_GEOS
   return msGEOSShapeFromWKT(string);
+#elif MS_EMBEDDED
+  return 0; // MS_EMBEDDED TODO: Provide from external
 #else
   return msOGRShapeFromWKT(string);
 #endif
 }
 
+#ifndef MS_EMBEDDED
 char *msShapeToWKT(shapeObj *shape) {
 #ifdef USE_GEOS
   char *pszGEOSStr;
@@ -81,6 +84,7 @@ char *msShapeToWKT(shapeObj *shape) {
   return msOGRShapeToWKT(shape);
 #endif
 }
+#endif // MS_EMBEDDED
 
 void msInitShape(shapeObj *shape) {
   /* spatial component */

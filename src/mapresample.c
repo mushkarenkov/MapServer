@@ -27,9 +27,13 @@
  * DEALINGS IN THE SOFTWARE.
  *****************************************************************************/
 
+#ifndef MS_EMBEDDED
 #include <assert.h>
 #include "mapresample.h"
 #include "mapthread.h"
+#else
+#include <math.h>
+#endif // MS_EMBEDDED
 
 #define SKIP_MASK(x, y)                                                        \
   (mask_rb && !*(mask_rb->data.rgba.a + (y)*mask_rb->data.rgba.row_step +      \
@@ -72,6 +76,7 @@ int InvGeoTransform(double *gt_in, double *gt_out)
   return 1;
 }
 
+#ifndef MS_EMBEDDED
 /************************************************************************/
 /*                      msNearestRasterResample()                       */
 /************************************************************************/
@@ -1637,3 +1642,4 @@ int msResampleGDALToMap(mapObj *map, layerObj *layer, imageObj *image,
 
   return result;
 }
+#endif // MS_EMBEDDED

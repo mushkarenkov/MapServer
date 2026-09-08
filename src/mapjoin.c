@@ -31,6 +31,7 @@
 
 #define ROW_ALLOCATION_SIZE 10
 
+#ifndef MS_EMBEDDED
 /* DBF/XBase function prototypes */
 int msDBFJoinConnect(layerObj *layer, joinObj *join);
 int msDBFJoinPrepare(joinObj *join, shapeObj *shape);
@@ -57,10 +58,12 @@ int msPOSTGRESQLJoinConnect(layerObj *layer, joinObj *join);
 int msPOSTGRESQLJoinPrepare(joinObj *join, shapeObj *shape);
 int msPOSTGRESQLJoinNext(joinObj *join);
 int msPOSTGRESQLJoinClose(joinObj *join);
+#endif // MS_EMBEDDED
 
 /* wrapper function for DB specific join functions */
 int msJoinConnect(layerObj *layer, joinObj *join) {
   switch (join->connectiontype) {
+#ifndef MS_EMBEDDED
   case (MS_DB_XBASE):
     return msDBFJoinConnect(layer, join);
     break;
@@ -73,6 +76,7 @@ int msJoinConnect(layerObj *layer, joinObj *join) {
   case (MS_DB_POSTGRES):
     return msPOSTGRESQLJoinConnect(layer, join);
     break;
+#endif // MS_EMBEDDED
   default:
     break;
   }
@@ -84,6 +88,7 @@ int msJoinConnect(layerObj *layer, joinObj *join) {
 
 int msJoinPrepare(joinObj *join, shapeObj *shape) {
   switch (join->connectiontype) {
+#ifndef MS_EMBEDDED
   case (MS_DB_XBASE):
     return msDBFJoinPrepare(join, shape);
     break;
@@ -96,6 +101,7 @@ int msJoinPrepare(joinObj *join, shapeObj *shape) {
   case (MS_DB_POSTGRES):
     return msPOSTGRESQLJoinPrepare(join, shape);
     break;
+#endif // MS_EMBEDDED
   default:
     break;
   }
@@ -107,6 +113,7 @@ int msJoinPrepare(joinObj *join, shapeObj *shape) {
 
 int msJoinNext(joinObj *join) {
   switch (join->connectiontype) {
+#ifndef MS_EMBEDDED
   case (MS_DB_XBASE):
     return msDBFJoinNext(join);
     break;
@@ -119,6 +126,7 @@ int msJoinNext(joinObj *join) {
   case (MS_DB_POSTGRES):
     return msPOSTGRESQLJoinNext(join);
     break;
+#endif // MS_EMBEDDED
   default:
     break;
   }
@@ -129,6 +137,7 @@ int msJoinNext(joinObj *join) {
 
 int msJoinClose(joinObj *join) {
   switch (join->connectiontype) {
+#ifndef MS_EMBEDDED
   case (MS_DB_XBASE):
     return msDBFJoinClose(join);
     break;
@@ -141,6 +150,7 @@ int msJoinClose(joinObj *join) {
   case (MS_DB_POSTGRES):
     return msPOSTGRESQLJoinClose(join);
     break;
+#endif // MS_EMBEDDED
   default:
     break;
   }
@@ -149,6 +159,7 @@ int msJoinClose(joinObj *join) {
   return MS_FAILURE;
 }
 
+#ifndef MS_EMBEDDED
 /*  */
 /* XBASE join functions */
 /*  */
@@ -524,6 +535,7 @@ int msCSVJoinClose(joinObj *join) {
 
   return (MS_SUCCESS);
 }
+#endif // MS_EMBEDDED
 
 #ifdef USE_MYSQL
 

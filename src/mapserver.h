@@ -122,15 +122,21 @@ typedef const ms_uint32 *ms_const_bitarray;
 
 #include "maperror.h"
 #include "mapprimitive.h"
+#ifndef MS_EMBEDDED
 #include "mapshape.h"
 #include "mapflatgeobuf.h"
+#endif // MS_EMBEDDED
 #include "mapsymbol.h"
+#ifndef MS_EMBEDDED
 #include "maptree.h" /* quadtree spatial index */
+#endif // MS_EMBEDDED
 #include "maphash.h"
 #include "mapio.h"
 #include <assert.h>
 #include "mapproject.h"
+#ifndef MS_EMBEDDED
 #include "cgiutil.h"
+#endif // MS_EMBEDDED
 #include "mapserv-config.h"
 
 #include <sys/types.h> /* regular expression support */
@@ -141,7 +147,9 @@ typedef const ms_uint32 *ms_const_bitarray;
 #include "mapregex.h"
 
 #define CPL_SUPRESS_CPLUSPLUS
+#ifndef MS_EMBEDDED
 #include "ogr_api.h"
+#endif // MS_EMBEDDED
 
 /* EQUAL and EQUALN are defined in cpl_port.h, so add them in here if ogr was
  * not included */
@@ -1746,7 +1754,8 @@ typedef struct {
   int num_rendered_members; ///< Number of rendered labels
 #ifndef SWIG
   /* One labelCacheSlotObj for each priority level */
-  labelCacheSlotObj slots[MS_MAX_LABEL_PRIORITY];
+// TOL: conflict with QT SLOTS
+  labelCacheSlotObj _slots[MS_MAX_LABEL_PRIORITY];
   int gutter; /* space in pixels around the image where labels cannot be placed
                */
   labelCacheMemberObj **rendered_text_symbols;
@@ -2340,8 +2349,8 @@ struct layerObj {
 };
 
 #ifndef SWIG
-void msFontCacheSetup();
-void msFontCacheCleanup();
+MS_DLL_EXPORT void msFontCacheSetup();
+MS_DLL_EXPORT void msFontCacheCleanup();
 
 typedef struct {
   double minx, miny, maxx, maxy, advance;
@@ -2685,8 +2694,10 @@ MS_DLL_EXPORT int msMapSetSize(mapObj *map, int width, int height);
 MS_DLL_EXPORT int msMapSetSize(mapObj *map, int width, int height);
 MS_DLL_EXPORT int msMapSetFakedExtent(mapObj *map);
 MS_DLL_EXPORT int msMapRestoreRealExtent(mapObj *map);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msMapLoadOWSParameters(mapObj *map, cgiRequestObj *request,
                                          const char *wmtver_string);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT int msMapIgnoreMissingData(mapObj *map);
 
 /* mapfile.c */
@@ -2700,8 +2711,10 @@ MS_DLL_EXPORT int msGetSymbolIndex(symbolSetObj *set, const char *name,
                                    int try_addimage_if_notfound);
 MS_DLL_EXPORT mapObj *msLoadMap(const char *filename, const char *new_mappath,
                                 const configObj *config);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msTransformXmlMapfile(const char *stylesheet,
                                         const char *xmlMapfile, FILE *tmpfile);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT int msSaveMap(mapObj *map, char *filename);
 MS_DLL_EXPORT int msSaveConfig(configObj *map, const char *filename);
 MS_DLL_EXPORT void msFreeCharArray(char **array, int num_items);
@@ -2744,10 +2757,12 @@ MS_DLL_EXPORT int msCheckConnection(
     layerObj *layer); /* connection pooling functions (mapfile.c) */
 MS_DLL_EXPORT void msCloseConnections(mapObj *map);
 
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT void msOGRInitialize(void);
 MS_DLL_EXPORT void msOGRCleanup(void);
 MS_DLL_EXPORT void msGDALCleanup(void);
 MS_DLL_EXPORT void msGDALInitialize(void);
+#endif // MS_EMBEDDED
 
 MS_DLL_EXPORT imageObj *msDrawScalebar(mapObj *map); /* in mapscale.c */
 MS_DLL_EXPORT int msCalculateScale(rectObj extent, int units, int width,
@@ -2816,6 +2831,7 @@ MS_DLL_EXPORT int msQueryByFilter(mapObj *map);
 MS_DLL_EXPORT int msGetQueryResultBounds(mapObj *map, rectObj *bounds);
 MS_DLL_EXPORT int msIsLayerQueryable(layerObj *lp);
 MS_DLL_EXPORT void msQueryFree(mapObj *map, int qlayer); /* todo: rename */
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msRasterQueryByShape(mapObj *map, layerObj *layer,
                                        shapeObj *selectshape);
 MS_DLL_EXPORT int msRasterQueryByRect(mapObj *map, layerObj *layer,
@@ -2823,6 +2839,7 @@ MS_DLL_EXPORT int msRasterQueryByRect(mapObj *map, layerObj *layer,
 MS_DLL_EXPORT int msRasterQueryByPoint(mapObj *map, layerObj *layer, int mode,
                                        pointObj p, double buffer,
                                        int maxresults);
+#endif // MS_EMBEDDED
 
 /* in mapstring.c */
 MS_DLL_EXPORT void msStringTrim(char *str);
@@ -3037,7 +3054,9 @@ MS_DLL_EXPORT void msFreeShape(shapeObj *shape); /* in mapprimitive.c */
 int msGetShapeRAMSize(shapeObj *shape);          /* in mapprimitive.c */
 MS_DLL_EXPORT void msFreeLabelPathObj(labelPathObj *path);
 MS_DLL_EXPORT shapeObj *msShapeFromWKT(const char *string);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT char *msShapeToWKT(shapeObj *shape);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT void msInitShape(shapeObj *shape);
 MS_DLL_EXPORT void msShapeDeleteLine(shapeObj *shape, int line);
 MS_DLL_EXPORT int msCopyShape(const shapeObj *from, shapeObj *to);
@@ -3245,14 +3264,17 @@ int msOGRLayerGetExtent(layerObj *layer, rectObj *extent);
 reprojectionObj MS_DLL_EXPORT *msLayerGetReprojectorToMap(layerObj *layer,
                                                           mapObj *map);
 
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msOGRGeometryToShape(OGRGeometryH hGeometry, shapeObj *shape,
                                        OGRwkbGeometryType type);
+#endif // MS_EMBEDDED
 
 MS_DLL_EXPORT int msInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT int msConnectLayer(layerObj *layer, const int connectiontype,
                                  const char *library_str);
 
 MS_DLL_EXPORT int msINLINELayerInitializeVirtualTable(layerObj *layer);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msSHPLayerInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT int msFlatGeobufLayerInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT int msTiledSHPLayerInitializeVirtualTable(layerObj *layer);
@@ -3267,12 +3289,15 @@ MS_DLL_EXPORT int msContourLayerInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT int msPluginLayerInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT int msUnionLayerInitializeVirtualTable(layerObj *layer);
 MS_DLL_EXPORT void msPluginFreeVirtualTableFactory(void);
+#endif // MS_EMBEDDED
 
 MS_DLL_EXPORT int LayerDefaultGetShapeCount(layerObj *layer, rectObj rect,
                                             projectionObj *rectProjection);
+#ifndef MS_EMBEDDED
 void msUVRASTERLayerUseMapExtentAndProjectionForNextWhichShapes(layerObj *layer,
                                                                 mapObj *map);
 rectObj msUVRASTERGetSearchRect(layerObj *layer, mapObj *map);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      Prototypes for functions in mapdraw.c                           */
@@ -3417,6 +3442,7 @@ MS_DLL_EXPORT int msJoinNext(joinObj *join);
 MS_DLL_EXPORT int msJoinClose(joinObj *join);
 
 /*in mapraster.c */
+#ifndef MS_EMBEDDED
 int msDrawRasterLayerLowCheckIfMustDraw(mapObj *map, layerObj *layer);
 void *msDrawRasterLayerLowOpenDataset(mapObj *map, layerObj *layer,
                                       const char *filename,
@@ -3459,6 +3485,7 @@ MS_DLL_EXPORT int msCleanupInterpolationDataset(mapObj *map, imageObj *image,
 /* in mapchart.c */
 MS_DLL_EXPORT int msDrawChartLayer(mapObj *map, layerObj *layer,
                                    imageObj *image);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      End of prototypes for functions in mapgd.c                      */
@@ -3477,7 +3504,9 @@ MS_DLL_EXPORT int msIntegerInArray(const int value, int *array,
                                    int numelements);
 
 MS_DLL_EXPORT int msExtentsOverlap(mapObj *map, layerObj *layer);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT char *msBuildOnlineResource(mapObj *map, cgiRequestObj *req);
+#endif // MS_EMBEDDED
 
 /* For mapswf */
 MS_DLL_EXPORT int getRgbColor(mapObj *map, int i, int *r, int *g,
@@ -3625,8 +3654,10 @@ MS_DLL_EXPORT void msGetOutputFormatMimeList(mapObj *map, char **mime_list,
                                              int max_mime);
 MS_DLL_EXPORT void
 msGetOutputFormatMimeListImg(mapObj *map, const char **mime_list, int max_mime);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT void
 msGetOutputFormatMimeListWMS(mapObj *map, const char **mime_list, int max_mime);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT outputFormatObj *msCloneOutputFormat(outputFormatObj *format);
 MS_DLL_EXPORT int msOutputFormatValidate(outputFormatObj *format,
                                          int issue_error);
@@ -3639,6 +3670,7 @@ void msOutputFormatResolveFromImage(mapObj *map, imageObj *img);
 /* ==================================================================== */
 /*      prototypes for functions in mapgdal.c                           */
 /* ==================================================================== */
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msSaveImageGDAL(mapObj *map, imageObj *image,
                                   const char *filename);
 MS_DLL_EXPORT int msInitDefaultGDALOutputFormat(outputFormatObj *format);
@@ -3651,6 +3683,7 @@ char **msGetStringListFromHashTable(hashTableObj *table);
 MS_DLL_EXPORT int msInitDefaultOGROutputFormat(outputFormatObj *format);
 MS_DLL_EXPORT int msOGRWriteFromQuery(mapObj *map, outputFormatObj *format,
                                       int sendheaders);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      Public prototype for mapogr.cpp functions.                      */
@@ -3661,10 +3694,12 @@ int MS_DLL_EXPORT msOGRLayerOpen(
     layerObj *layer, const char *pszOverrideConnection); /* in mapogr.cpp */
 int MS_DLL_EXPORT msOGRLayerClose(layerObj *layer);
 
+#ifndef MS_EMBEDDED
 char MS_DLL_EXPORT *msOGRShapeToWKT(shapeObj *shape);
 shapeObj MS_DLL_EXPORT *msOGRShapeFromWKT(const char *string);
 int msOGRUpdateStyleFromString(mapObj *map, layerObj *layer, classObj *c,
                                const char *stylestring);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      prototypes for functions in mapcopy                             */
@@ -3774,8 +3809,10 @@ MS_DLL_EXPORT int msHexDecode(const char *in, unsigned char *out, int numchars);
 /* ==================================================================== */
 /*      prototypes for functions in mapxmp.c                            */
 /* ==================================================================== */
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msXmpPresent(mapObj *map);
 MS_DLL_EXPORT int msXmpWrite(mapObj *map, const char *filename);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      prototypes for functions in mapgeomtransform.c                  */
@@ -3811,10 +3848,12 @@ MS_DLL_EXPORT int msGeomTransformShape(mapObj *map, layerObj *layer,
 /* ==================================================================== */
 /*      prototypes for functions in mapgraticule.c                      */
 /* ==================================================================== */
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT graticuleIntersectionObj *
 msGraticuleLayerGetIntersectionPoints(mapObj *map, layerObj *layer);
 MS_DLL_EXPORT void
 msGraticuleLayerFreeIntersectionPoints(graticuleIntersectionObj *psValue);
+#endif // MS_EMBEDDED
 
 /* ==================================================================== */
 /*      end of prototypes for functions in mapgraticule.c               */
@@ -3847,6 +3886,27 @@ MS_DLL_EXPORT shapeObj *msV8TransformShape(shapeObj *shape,
 /* ==================================================================== */
 
 #endif
+
+/* ==================================================================== */
+/*      prototypes for OQL PLUGIN                                       */
+/* ==================================================================== */
+// TOL: OQL Layer
+MS_DLL_EXPORT int msOqlLayerInitializeVirtualTable(layerObj * layer);
+MS_DLL_EXPORT void msOqlResetLayerInfo(layerObj * layer, void * context);
+/* ==================================================================== */
+/*      end of prototypes for OQL PLUGIN                                */
+/* ==================================================================== */
+
+/* ==================================================================== */
+/*      prototypes for GEOPACKAGE                                       */
+/* ==================================================================== */
+#ifdef WITH_GEOPACKAGE
+// TOL: Support of GEOPACKAGE
+MS_DLL_EXPORT int msGeoPackageLayerInitializeVirtualTable(layerObj *layer);
+#endif // WITH_GEOPACKAGE
+/* ==================================================================== */
+/*      end of prototypes for GEOPACKAGE                                */
+/* ==================================================================== */
 
 #ifndef SWIG
 /*
@@ -3952,18 +4012,22 @@ typedef struct {
 #ifndef SWIG
 MS_DLL_EXPORT int msInitializeDummyRenderer(rendererVTableObj *vtable);
 MS_DLL_EXPORT int msInitializeRendererVTable(outputFormatObj *outputformat);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int
 msPopulateRendererVTableCairoRaster(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableCairoSVG(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableCairoPDF(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableOGL(rendererVTableObj *renderer);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT int msPopulateRendererVTableAGG(rendererVTableObj *renderer);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msPopulateRendererVTableUTFGrid(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableKML(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableOGR(rendererVTableObj *renderer);
 MS_DLL_EXPORT int msPopulateRendererVTableMVT(rendererVTableObj *renderer);
 
 MS_DLL_EXPORT int msMVTWriteTile(mapObj *map, int sendheaders);
+#endif // MS_EMBEDDED
 
 #ifdef USE_CAIRO
 MS_DLL_EXPORT void msCairoCleanup(void);
@@ -4102,7 +4166,9 @@ shapeObj *msOffsetCurve(shapeObj *p, double offset);
 shapeObj *msGEOSOffsetCurve(shapeObj *p, double offset);
 #endif
 
+#ifndef MS_EMBEDDED
 int msOGRSupportsIsNull(layerObj *layer);
+#endif // MS_EMBEDDED
 
 #ifdef NEED_IGNORE_RET_VAL
 static inline void IGNORE_RET_VAL(int x) { (void)x; }

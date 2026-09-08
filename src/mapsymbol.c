@@ -890,7 +890,8 @@ symbolObj *msRemoveSymbol(symbolSetObj *symbolset, int nSymbolIndex) {
       }
       /* Update symbol references in labelcache */
       for (c = 0; c < MS_MAX_LABEL_PRIORITY; c++) {
-        labelCacheSlotObj *cacheslot = &(symbolset->map->labelcache.slots[c]);
+// TOL: conflict with QT SLOTS
+        labelCacheSlotObj *cacheslot = &(symbolset->map->labelcache._slots[c]);
         for (l = 0; l < cacheslot->numlabels; l++) {
           labelCacheMemberObj *cachePtr = &(cacheslot->labels[l]);
           for (lb = 0; lb < cachePtr->numtextsymbols; lb++) {
@@ -1028,14 +1029,16 @@ int msCopySymbolSet(symbolSetObj *dst, const symbolSetObj *src, mapObj *map) {
 
   /* Copy child symbols */
   for (i = 0; i < src->numsymbols; i++) {
-    if (msGrowSymbolSet(dst) == NULL)
-      return MS_FAILURE;
+    if (dst->numsymbols <= i) {
+      if (msGrowSymbolSet(dst) == NULL)
+        return MS_FAILURE;
+      dst->numsymbols++;
+    }
     return_value = msCopySymbol(dst->symbol[i], src->symbol[i], map);
     if (return_value != MS_SUCCESS) {
       msSetError(MS_MEMERR, "Failed to copy symbol.", "msCopySymbolSet()");
       return (MS_FAILURE);
     }
-    dst->numsymbols++;
   }
 
   /* MS_COPYSTELEM(imagecachesize); */

@@ -1245,6 +1245,7 @@ int msQueryByRect(mapObj *map) {
 
     msRectToPolygon(searchrect, &searchshape);
 
+#ifndef MS_EMBEDDED
     /* Raster layers are handled specially. */
     if (lp->type == MS_LAYER_RASTER) {
       if (msRasterQueryByRect(map, lp, searchrect) == MS_FAILURE)
@@ -1252,6 +1253,7 @@ int msQueryByRect(mapObj *map) {
 
       continue;
     }
+#endif // MS_EMBEDDED
 
     /* Paging could have been disabled before */
     paging = msLayerGetPaging(lp);
@@ -1949,6 +1951,7 @@ int msQueryByPoint(mapObj *map) {
         continue;
     }
 
+#ifndef MS_EMBEDDED
     /* Raster layers are handled specially.  */
     if (lp->type == MS_LAYER_RASTER) {
       if (msRasterQueryByPoint(map, lp, map->query.mode, map->query.point,
@@ -1957,6 +1960,7 @@ int msQueryByPoint(mapObj *map) {
         return MS_FAILURE;
       continue;
     }
+#endif // MS_EMBEDDED
 
     /* Get the layer tolerance default is 3 for point and line layers, 0 for
      * others */
@@ -2224,12 +2228,14 @@ int msQueryByShape(mapObj *map) {
         continue;
     }
 
+#ifndef MS_EMBEDDED
     /* Raster layers are handled specially. */
     if (lp->type == MS_LAYER_RASTER) {
       if (msRasterQueryByShape(map, lp, qshape) == MS_FAILURE)
         return MS_FAILURE;
       continue;
     }
+#endif // MS_EMBEDDED
 
     /* Get the layer tolerance default is 3 for point and line layers, 0 for
      * others */

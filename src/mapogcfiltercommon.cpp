@@ -152,6 +152,7 @@ FLTGetIsBetweenComparisonCommonExpresssion(FilterEncodingNode *psFilterNode,
   bool bString = false;
   bool bDateTime = false;
 
+#ifndef MS_EMBEDDED
   const char *pszType = msOWSLookupMetadata(
       &(lp->metadata), "OFG",
       (std::string(psFilterNode->psLeftNode->pszValue) + "_type").c_str());
@@ -159,7 +160,9 @@ FLTGetIsBetweenComparisonCommonExpresssion(FilterEncodingNode *psFilterNode,
     bString = true;
   else if (pszType != NULL && (strcasecmp(pszType, "Date") == 0))
     bDateTime = true;
-  else if (FLTIsNumeric(bounds[0].c_str()) == MS_FALSE)
+  else
+#endif // MS_EMBEDDED
+  if (FLTIsNumeric(bounds[0].c_str()) == MS_FALSE)
     bString = true;
 
   if (!bString && !bDateTime) {
@@ -245,6 +248,7 @@ FLTGetBinaryComparisonCommonExpression(FilterEncodingNode *psFilterNode,
   bool bString = false;
   bool bDateTime = false;
   if (psFilterNode->psRightNode->pszValue) {
+#ifndef MS_EMBEDDED
     const char *pszType = msOWSLookupMetadata(
         &(lp->metadata), "OFG",
         (std::string(psFilterNode->psLeftNode->pszValue) + "_type").c_str());
@@ -252,7 +256,9 @@ FLTGetBinaryComparisonCommonExpression(FilterEncodingNode *psFilterNode,
       bString = true;
     else if (pszType != NULL && (strcasecmp(pszType, "Date") == 0))
       bDateTime = true;
-    else if (FLTIsNumeric(psFilterNode->psRightNode->pszValue) == MS_FALSE)
+    else
+#endif // MS_EMBEDDED
+    if (FLTIsNumeric(psFilterNode->psRightNode->pszValue) == MS_FALSE)
       bString = true;
   }
 

@@ -148,29 +148,29 @@ int main(int argc, char **argv) {
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 #options suported by the cmake builder
-option(WITH_PROTOBUFC "Choose if protocol buffers support should be built in (required for vector tiles)" ON)
+option(WITH_PROTOBUFC "Choose if protocol buffers support should be built in (required for vector tiles)" OFF) # ON
 option(WITH_KML "Enable native KML output support (requires libxml2 support)" OFF)
 option(WITH_SOS "Enable SOS Server support (requires PROJ and libxml2 support)" OFF)
-option(WITH_WMS "Enable WMS Server support (requires PROJ support)" ON)
-option(WITH_FRIBIDI "Choose if FriBidi glyph shaping support should be built in (usefull for right-to-left languages) (requires HARFBUZZ)" ON)
-option(WITH_HARFBUZZ "Choose if Harfbuzz complex text layout should be included (needed for e.g. arabic and hindi) (requires FRIBIDI)" ON)
+option(WITH_WMS "Enable WMS Server support (requires PROJ support)" OFF) # ON
+option(WITH_FRIBIDI "Choose if FriBidi glyph shaping support should be built in (usefull for right-to-left languages) (requires HARFBUZZ)" OFF) # ON
+option(WITH_HARFBUZZ "Choose if Harfbuzz complex text layout should be included (needed for e.g. arabic and hindi) (requires FRIBIDI)" OFF) # ON
 option(WITH_ICONV "Choose if Iconv Internationalization support should be built in" ON)
-option(WITH_CAIRO "Choose if CAIRO  rendering support should be built in (required for SVG and PDF output)" ON)
+option(WITH_CAIRO "Choose if CAIRO  rendering support should be built in (required for SVG and PDF output)" OFF) # ON
 option(WITH_SVGCAIRO "Choose if SVG symbology support (via libsvgcairo) should be built in (requires cairo, libsvg, libsvg-cairo. Incompatible with librsvg)" OFF)
 option(WITH_RSVG "Choose if SVG symbology support (via librsvg) should be built in (requires cairo, librsvg. Incompatible with libsvg-cairo)" OFF)
 option(WITH_MYSQL "Choose if MYSQL joining support should be built in" OFF)
-option(WITH_FCGI "Choose if FastCGI support should be built in" ON)
+option(WITH_FCGI "Choose if FastCGI support should be built in" OFF) # ON
 option(WITH_GEOS "Choose if GEOS geometry operations support should be built in" ON)
 option(WITH_POSTGIS "Choose if Postgis input support should be built in" ON)
-option(WITH_CLIENT_WMS "Enable Client WMS Layer support (requires CURL)" OFF)
-option(WITH_CLIENT_WFS "Enable Client WMS Layer support (requires CURL)" OFF)
+option(WITH_CLIENT_WMS "Enable Client WMS Layer support (requires CURL)" ON) # OFF
+option(WITH_CLIENT_WFS "Enable Client WMS Layer support (requires CURL)" ON) # OFF
 option(WITH_CURL "Enable Curl HTTP support (required for wms/wfs client, and remote SLD)" OFF)
-option(WITH_WFS "Enable WFS Server support (requires PROJ and OGR support)" ON)
-option(WITH_WCS "Enable WCS Server support (requires PROJ and GDAL support)" ON)
-option(WITH_OGCAPI "Enable OGCAPI Server support (requires PROJ and OGR support)" ON)
+option(WITH_WFS "Enable WFS Server support (requires PROJ and OGR support)" OFF) # ON
+option(WITH_WCS "Enable WCS Server support (requires PROJ and GDAL support)" OFF) # ON
+option(WITH_OGCAPI "Enable OGCAPI Server support (requires PROJ and OGR support)" OFF) # ON
 option(WITH_LIBXML2 "Choose if libxml2 support should be built in (used for sos, wcs 1.1,2.0 and wfs 1.1)" ON)
-option(WITH_THREAD_SAFETY "Choose if a thread-safe version of libmapserver should be built (only recommended for some mapscripts)" OFF)
-option(WITH_GIF "Enable GIF support (for PIXMAP loading)" ON)
+option(WITH_THREAD_SAFETY "Choose if a thread-safe version of libmapserver should be built (only recommended for some mapscripts)" ON) # OFF
+option(WITH_GIF "Enable GIF support (for PIXMAP loading)" OFF) # ON
 option(WITH_PYTHON "Enable Python mapscript support" OFF)
 option(WITH_PHPNG "Enable PHPNG (SWIG) mapscript support" OFF)
 option(WITH_PERL "Enable Perl mapscript support" OFF)

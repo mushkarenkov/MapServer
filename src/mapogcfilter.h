@@ -62,8 +62,10 @@ MS_DLL_EXPORT char *FLTGetExpressionForValuesRanges(layerObj *lp,
                                                     const char *value,
                                                     int forcecharcter);
 
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT FilterEncodingNode *
 FLTParseFilterEncoding(const char *szXMLString);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT FilterEncodingNode *FLTCreateFilterEncodingNode(void);
 MS_DLL_EXPORT char **FLTSplitFilters(const char *pszStr, int *pnTokens);
 MS_DLL_EXPORT int FLTApplyFilterToLayer(FilterEncodingNode *psNode, mapObj *map,
@@ -90,15 +92,19 @@ MS_DLL_EXPORT int
 FLTValidForPropertyIsLikeFilter(FilterEncodingNode *psFilterNode);
 MS_DLL_EXPORT int FLTIsOnlyPropertyIsLike(FilterEncodingNode *psFilterNode);
 
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT void FLTInsertElementInNode(FilterEncodingNode *psFilterNode,
                                           CPLXMLNode *psXMLNode);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT int FLTIsLogicalFilterType(const char *pszValue);
 MS_DLL_EXPORT int FLTIsBinaryComparisonFilterType(const char *pszValue);
 MS_DLL_EXPORT int FLTIsComparisonFilterType(const char *pszValue);
 MS_DLL_EXPORT int FLTIsFeatureIdFilterType(const char *pszValue);
 MS_DLL_EXPORT int FLTIsSpatialFilterType(const char *pszValue);
 MS_DLL_EXPORT int FLTIsTemporalFilterType(const char *pszValue);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int FLTIsSupportedFilterType(CPLXMLNode *psXMLNode);
+#endif // MS_EMBEDDED
 
 MS_DLL_EXPORT const char *FLTGetBBOX(FilterEncodingNode *psFilterNode,
                                      rectObj *psRect);
@@ -134,10 +140,12 @@ MS_DLL_EXPORT int FLTIsSimpleFilter(FilterEncodingNode *psFilterNode);
 MS_DLL_EXPORT FilterEncodingNode *
 FLTCreateFeatureIdFilterEncoding(const char *pszString);
 
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int FLTParseGMLEnvelope(CPLXMLNode *psRoot, rectObj *psBbox,
                                       char **ppszSRS);
 MS_DLL_EXPORT int FLTParseGMLBox(CPLXMLNode *psBox, rectObj *psBbox,
                                  char **ppszSRS);
+#endif // MS_EMBEDDED
 
 /*common-expressions*/
 MS_DLL_EXPORT char *FLTGetCommonExpression(FilterEncodingNode *psFilterNode,

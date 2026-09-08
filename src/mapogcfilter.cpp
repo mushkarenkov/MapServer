@@ -297,6 +297,7 @@ char *FLTGetExpressionForValuesRanges(layerObj *lp, const char *item,
   return pszExpression;
 }
 
+#ifndef MS_EMBEDDED
 int FLTogrConvertGeometry(OGRGeometryH hGeometry, shapeObj *psShape,
                           OGRwkbGeometryType nType) {
   return msOGRGeometryToShape(hGeometry, psShape, nType);
@@ -336,6 +337,7 @@ static int FLTShapeFromGMLTree(CPLXMLNode *psTree, shapeObj *psShape,
 
   return MS_FALSE;
 }
+#endif // MS_EMBEDDED
 
 int FLTGetGeosOperator(char *pszValue) {
   if (!pszValue)
@@ -724,6 +726,7 @@ static FilterEncodingNode *FLTGetTopBBOX(FilterEncodingNode *psNode) {
 /************************************************************************/
 
 int FLTLayerSetInvalidRectIfSupported(layerObj *lp, rectObj *rect) {
+#ifndef MS_EMBEDDED
   const char *pszUseDefaultExtent = msOWSLookupMetadata(
       &(lp->metadata), "F", "use_default_extent_for_getfeature");
   if (pszUseDefaultExtent && !CSLTestBoolean(pszUseDefaultExtent) &&
@@ -734,6 +737,7 @@ int FLTLayerSetInvalidRectIfSupported(layerObj *lp, rectObj *rect) {
     *rect = rectInvalid;
     return MS_TRUE;
   }
+#endif // MS_EMBEDDED
   return MS_FALSE;
 }
 
@@ -814,6 +818,7 @@ int FLTLayerApplyPlainFilterToLayer(FilterEncodingNode *psNode, mapObj *map,
 /*      Calling function should use FreeFilterEncodingNode function     */
 /*      to free memeory.                                                */
 /************************************************************************/
+#ifndef MS_EMBEDDED
 FilterEncodingNode *FLTParseFilterEncoding(const char *szXMLString) {
   CPLXMLNode *psRoot = NULL, *psChild = NULL, *psFilter = NULL;
   FilterEncodingNode *psFilterNode = NULL;
@@ -861,6 +866,7 @@ FilterEncodingNode *FLTParseFilterEncoding(const char *szXMLString) {
 
   return psFilterNode;
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*      int FLTValidFilterNode(FilterEncodingNode *psFilterNode)        */
@@ -979,6 +985,7 @@ FilterEncodingNode *FLTCreateBinaryCompFilterEncodingNode(void) {
 /*                                                                      */
 /************************************************************************/
 
+#ifndef MS_EMBEDDED
 static CPLXMLNode *FLTFindGeometryNode(CPLXMLNode *psXMLNode, int *pbPoint,
                                        int *pbLine, int *pbPolygon) {
   CPLXMLNode *psGMLElement = NULL;
@@ -1684,6 +1691,7 @@ void FLTInsertElementInNode(FilterEncodingNode *psFilterNode,
     } /* end of is temporal */
   }
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*            int FLTIsLogicalFilterType((char *pszValue)                  */
@@ -1802,6 +1810,7 @@ int FLTIsTemporalFilterType(const char *pszValue) {
 /*      Verfify if the value of the node is one of the supported        */
 /*      filter type.                                                    */
 /************************************************************************/
+#ifndef MS_EMBEDDED
 int FLTIsSupportedFilterType(CPLXMLNode *psXMLNode) {
   if (psXMLNode) {
     if (FLTIsLogicalFilterType(psXMLNode->pszValue) ||
@@ -1814,6 +1823,7 @@ int FLTIsSupportedFilterType(CPLXMLNode *psXMLNode) {
 
   return MS_FALSE;
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*                          FLTNumberOfFilterType                       */
@@ -2343,11 +2353,14 @@ char *FLTGetBinaryComparisonSQLExpresssion(FilterEncodingNode *psFilterNode,
     const char *pszOFGType;
     snprintf(szTmp, sizeof(szTmp), "%s_type",
              psFilterNode->psLeftNode->pszValue);
+#ifndef MS_EMBEDDED
     pszOFGType = msOWSLookupMetadata(&(lp->metadata), "OFG", szTmp);
     if (pszOFGType != NULL && strcasecmp(pszOFGType, "Character") == 0)
       bString = 1;
 
-    else if (FLTIsNumeric(psFilterNode->psRightNode->pszValue) == MS_FALSE)
+    else
+#endif // MS_EMBEDDED
+    if (FLTIsNumeric(psFilterNode->psRightNode->pszValue) == MS_FALSE)
       bString = 1;
   }
 
@@ -2469,10 +2482,12 @@ char *FLTGetIsBetweenComparisonSQLExpresssion(FilterEncodingNode *psFilterNode,
     const char *pszOFGType;
     snprintf(szTmp, sizeof(szTmp), "%s_type",
              psFilterNode->psLeftNode->pszValue);
+#ifndef MS_EMBEDDED
     pszOFGType = msOWSLookupMetadata(&(lp->metadata), "OFG", szTmp);
     if (pszOFGType != NULL && strcasecmp(pszOFGType, "Character") == 0)
       bString = 1;
     else if (FLTIsNumeric(aszBounds[0]) == MS_FALSE)
+#endif // MS_EMBEDDED
       bString = 1;
   }
   if (!bString) {
@@ -2711,6 +2726,7 @@ FilterEncodingNode *FLTCreateFeatureIdFilterEncoding(const char *pszString) {
 /*                                                                      */
 /*      Parse gml box. Used for FE 1.0                                  */
 /************************************************************************/
+#ifndef MS_EMBEDDED
 int FLTParseGMLBox(CPLXMLNode *psBox, rectObj *psBbox, char **ppszSRS) {
   int bCoordinatesValid = 0;
   CPLXMLNode *psCoordinates = NULL;
@@ -2838,6 +2854,7 @@ int FLTParseGMLEnvelope(CPLXMLNode *psRoot, rectObj *psBbox, char **ppszSRS) {
 
   return bValid;
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*                        FLTNeedSRSSwapping                            */
@@ -2961,6 +2978,7 @@ FLTStripNameSpacesFromPropertyName(FilterEncodingNode *psFilterNode) {
   }
 }
 
+#ifndef MS_EMBEDDED
 static void FLTRemoveGroupName(FilterEncodingNode *psFilterNode,
                                gmlGroupListObj *groupList) {
   int i;
@@ -3002,6 +3020,7 @@ static void FLTRemoveGroupName(FilterEncodingNode *psFilterNode,
       FLTRemoveGroupName(psFilterNode->psRightNode, groupList);
   }
 }
+#endif // MS_EMBEDDED
 
 /************************************************************************/
 /*                    FLTPreParseFilterForAliasAndGroup                 */
@@ -3034,11 +3053,13 @@ void FLTPreParseFilterForAliasAndGroup(FilterEncodingNode *psFilterNode,
           continue;
         char szTmp[256];
         snprintf(szTmp, sizeof(szTmp), "%s_alias", lp->items[i]);
+#ifndef MS_EMBEDDED
         const char *pszFullName =
             msOWSLookupMetadata(&(lp->metadata), namespaces, szTmp);
         if (pszFullName) {
           FLTReplacePropertyName(psFilterNode, pszFullName, lp->items[i]);
         }
+#endif // MS_EMBEDDED
       }
       if (!layerWasOpened) /* do not close the layer if it has been opened
                               somewhere else (paging?) */
@@ -3149,6 +3170,7 @@ int FLTProcessPropertyIsNull(FilterEncodingNode *psFilterNode, mapObj *map,
     lp = GET_LAYER(map, i);
     layerWasOpened = msLayerIsOpen(lp);
 
+#ifndef MS_EMBEDDED
     /* Horrible HACK to compensate for the lack of null testing in MapServer */
     if (lp->connectiontype == MS_POSTGIS ||
         (lp->connectiontype == MS_OGR && msOGRSupportsIsNull(lp))) {
@@ -3158,6 +3180,7 @@ int FLTProcessPropertyIsNull(FilterEncodingNode *psFilterNode, mapObj *map,
       psFilterNode->psRightNode->eType = FILTER_NODE_TYPE_LITERAL;
       psFilterNode->psRightNode->pszValue = msStrdup("_MAPSERVER_NULL_");
     }
+#endif // MS_EMBEDDED
 
     if (!layerWasOpened) /* do not close the layer if it has been opened
                             somewhere else (paging?) */
@@ -3198,6 +3221,7 @@ int FLTCheckInvalidProperty(FilterEncodingNode *psFilterNode, mapObj *map,
 
     lp = GET_LAYER(map, i);
     layerWasOpened = msLayerIsOpen(lp);
+#ifndef MS_EMBEDDED
     if ((layerWasOpened || msLayerOpen(lp) == MS_SUCCESS) &&
         msLayerGetItems(lp) == MS_SUCCESS) {
       int i;
@@ -3214,6 +3238,7 @@ int FLTCheckInvalidProperty(FilterEncodingNode *psFilterNode, mapObj *map,
       }
       msGMLFreeItems(items);
     }
+#endif // MS_EMBEDDED
 
     if (!layerWasOpened) /* do not close the layer if it has been opened
                             somewhere else (paging?) */

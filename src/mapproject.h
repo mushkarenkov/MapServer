@@ -130,8 +130,10 @@ MS_DLL_EXPORT int msProjectRect(projectionObj *in, projectionObj *out,
 MS_DLL_EXPORT int msProjectRectAsPolygon(reprojectionObj *reprojector,
                                          rectObj *rect);
 MS_DLL_EXPORT int msProjectionsDiffer(projectionObj *, projectionObj *);
+#ifndef MS_EMBEDDED
 MS_DLL_EXPORT int msOGCWKT2ProjectionObj(const char *pszWKT,
                                          projectionObj *proj, int debug_flag);
+#endif // MS_EMBEDDED
 MS_DLL_EXPORT char *msProjectionObj2OGCWKT(projectionObj *proj);
 
 MS_DLL_EXPORT void msFreeProjection(projectionObj *p);

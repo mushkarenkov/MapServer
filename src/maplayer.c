@@ -1165,6 +1165,7 @@ int msLayerWhichItems(layerObj *layer, int get_all, const char *metadata) {
 
   // if we are using a GetMap request with a WMS filter we don't need to return
   // all items
+#ifndef MS_EMBEDDED
   if (msOWSLookupMetadata(&(layer->metadata), "G", "wmsfilter_flag") != NULL) {
     get_all = MS_FALSE;
   }
@@ -1177,6 +1178,7 @@ int msLayerWhichItems(layerObj *layer, int get_all, const char *metadata) {
       get_all = MS_FALSE;
     }
   }
+#endif // MS_EMBEDDED
 
   /* always retrieve all items in some cases */
   if (layer->connectiontype == MS_INLINE ||
@@ -1417,6 +1419,7 @@ int msLayerGetFeatureStyle(mapObj *map, layerObj *layer, classObj *c,
     msUpdateClassFromString(c, stylestring);
     double geo_cellsize = msGetGeoCellSize(map);
     msUpdateClassScaleFactor(geo_cellsize, map, layer, c);
+#ifndef MS_EMBEDDED
   } else if (strncasecmp(stylestring, "pen", 3) == 0 ||
              strncasecmp(stylestring, "brush", 5) == 0 ||
              strncasecmp(stylestring, "symbol", 6) == 0 ||
@@ -1426,6 +1429,7 @@ int msLayerGetFeatureStyle(mapObj *map, layerObj *layer, classObj *c,
     // check for the closing tag of an SLD document </StyledLayerDescriptor> or
     // with a namespace e.g. </sld:StyledLayerDescriptor>
     msSLDApplySLD(map, stylestring, layer->index, NULL, NULL);
+#endif // MS_EMBEDDED
   } else {
     resetClassStyle(c);
   }
@@ -2372,6 +2376,7 @@ int msInitializeVirtualTable(layerObj *layer) {
   case (MS_INLINE):
     return (msINLINELayerInitializeVirtualTable(layer));
     break;
+#ifndef MS_EMBEDDED
   case (MS_SHAPEFILE):
     return (msSHPLayerInitializeVirtualTable(layer));
     break;
@@ -2407,9 +2412,17 @@ int msInitializeVirtualTable(layerObj *layer) {
   case (MS_RASTER):
     return (msRASTERLayerInitializeVirtualTable(layer));
     break;
+#endif // MS_EMBEDDED
   case (MS_PLUGIN):
-    return (msPluginLayerInitializeVirtualTable(layer));
+#ifdef WITH_GEOPACKAGE
+// TOL: Support of GEOPACKAGE Plugin
+    return (msGeoPackageLayerInitializeVirtualTable(layer));
+#else
+// TOL: Support of OQL Plugin
+    return (msOqlLayerInitializeVirtualTable(layer));
+#endif // WITH_GEOPACKAGE
     break;
+#ifndef MS_EMBEDDED
   case (MS_UNION):
     return (msUnionLayerInitializeVirtualTable(layer));
     break;
@@ -2419,6 +2432,7 @@ int msInitializeVirtualTable(layerObj *layer) {
   case (MS_CONTOUR):
     return (msContourLayerInitializeVirtualTable(layer));
     break;
+#endif // MS_EMBEDDED
   default:
     msSetError(MS_MISCERR, "Unknown connectiontype, it was %d",
                "msInitializeVirtualTable()", layer->connectiontype);

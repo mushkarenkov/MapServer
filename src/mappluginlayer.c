@@ -202,6 +202,7 @@ static void copyVirtualTable(layerVTableObj *dest, const layerVTableObj *src) {
       src->LayerGetPaging ? src->LayerGetPaging : dest->LayerGetPaging;
 }
 
+#ifndef MS_EMBEDDED
 int msPluginLayerInitializeVirtualTable(layerObj *layer) {
   VTFactoryItemObj *pVTFI;
 
@@ -247,3 +248,4 @@ void msPluginFreeVirtualTableFactory() {
 
   msReleaseLock(TLOCK_LAYER_VTABLE);
 }
+#endif // MS_EMBEDDED

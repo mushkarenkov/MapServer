@@ -568,7 +568,8 @@ int main(int argc, char *argv[]) {
     char *pszBuf;
     mapObj *map;
     /* map = msNewMapObj(); */
-    map = msLoadMap("/tmp/test.map", NULL);
+// TOL: Adding NULL
+    map = msLoadMap("/tmp/test.map", NULL, NULL);
 
     sprintf(string_buf2, "string with a {%s} encrypted token", string_buf);
 

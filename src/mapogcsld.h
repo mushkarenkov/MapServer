@@ -28,6 +28,8 @@
 
 #include "mapserver.h"
 
+#ifndef MS_EMBEDDED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,8 +44,12 @@ MS_DLL_EXPORT int msSLDApplySLD(mapObj *map, const char *psSLDXML, int iLayer,
                                 char **ppszLayerNames);
 int msSLDApplyFromFile(mapObj *map, layerObj *layer, const char *filename);
 
+#endif // MS_EMBEDDED
+
 /* There is a dependency to OGR for the MiniXML parser */
 #include "cpl_minixml.h"
+
+#ifndef MS_EMBEDDED
 
 enum objType { MS_OBJ_STYLE, MS_OBJ_LABEL };
 
@@ -103,4 +109,7 @@ FilterEncodingNode *BuildExpressionTree(char *pszExpression,
 
 #ifdef __cplusplus
 } /* extern C */
+
+#endif // MS_EMBEDDED
+
 #endif

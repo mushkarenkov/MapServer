@@ -30,6 +30,8 @@
 #ifndef MAPOWS_H
 #define MAPOWS_H
 
+#ifndef MS_EMBEDDED
+
 #include "maphttp.h"
 #include <time.h>
 
@@ -621,5 +623,7 @@ int msSOSDispatch(mapObj *map, cgiRequestObj *requestobj,
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+#endif // MS_EMBEDDED
 
 #endif /* MAPOWS_H */
