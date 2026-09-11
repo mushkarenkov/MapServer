@@ -595,7 +595,7 @@ int msDrawRasterLayerGDAL(mapObj *map, layerObj *layer, imageObj *image,
 
       const int j =
           bScaleColors
-              ? MAX(0, MIN(255, (int)((i - dfScaleMin) * dfScaleRatio)))
+              ? MS_MAX(0, MS_MIN(255, (int)((i - dfScaleMin) * dfScaleRatio)))
               : i;
 
       pixel.red = sEntry.c1;
@@ -673,7 +673,7 @@ int msDrawRasterLayerGDAL(mapObj *map, layerObj *layer, imageObj *image,
       GDALGetColorEntryAsRGB(hColorMap, i, &sEntry);
       const int j =
           bScaleColors
-              ? MAX(0, MIN(255, (int)((i - dfScaleMin) * dfScaleRatio)))
+              ? MS_MAX(0, MS_MIN(255, (int)((i - dfScaleMin) * dfScaleRatio)))
               : i;
 
       if (sEntry.c4 != 0 &&
