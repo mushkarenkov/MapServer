@@ -15,6 +15,9 @@ include(CheckSymbolExists)
 include(CheckIncludeFile)
 include(CheckCSourceCompiles)
 
+# # TOL
+# include(CMakeDependentOption)
+
 set (MapServer_VERSION_MAJOR 8)
 set (MapServer_VERSION_MINOR 2)
 set (MapServer_VERSION_REVISION 2)
@@ -61,24 +64,24 @@ if (APPLE)
   set(CMAKE_FIND_FRAMEWORK "LAST")
 endif (APPLE)
 
-# Offer the user the choice of overriding the installation directories
-set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
-set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
-set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
-if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKE_DIR CMake)
-else()
-  set(DEF_INSTALL_CMAKE_DIR share/mapserver/cmake)
-endif()
-set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
+# # Offer the user the choice of overriding the installation directories
+# set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+# set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+# set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+# if(WIN32 AND NOT CYGWIN)
+#   set(DEF_INSTALL_CMAKE_DIR CMake)
+# else()
+#   set(DEF_INSTALL_CMAKE_DIR share/mapserver/cmake)
+# endif()
+# set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
-# Make relative paths absolute (needed later on)
-foreach(p LIB BIN INCLUDE CMAKE)
-  set(var INSTALL_${p}_DIR)
-  if(NOT IS_ABSOLUTE "${${var}}")
-    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
-  endif()
-endforeach()
+# # Make relative paths absolute (needed later on)
+# foreach(p LIB BIN INCLUDE CMAKE)
+#   set(var INSTALL_${p}_DIR)
+#   if(NOT IS_ABSOLUTE "${${var}}")
+#     set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+#   endif()
+# endforeach()
 
 macro (ms_link_libraries)
   if(BUILD_DYNAMIC)
@@ -191,13 +194,13 @@ option(WITH_APACHE_MODULE "include (experimental) support for apache module" OFF
 option(WITH_GENERIC_NINT "generic rounding" OFF)
 option(WITH_PYMAPSCRIPT_ANNOTATIONS "Add annotations to Python mapscript output" OFF)
 
-option(FUZZER "Build fuzzers using libFuzzer (requires Clang, will disable executable - mapserv, etc. - generation)" OFF)
-mark_as_advanced(FUZZER)
-option(BUILD_FUZZER_REPRODUCER "Build fuzzer reproducer programs" ON)
+# option(FUZZER "Build fuzzers using libFuzzer (requires Clang, will disable executable - mapserv, etc. - generation)" OFF)
+# mark_as_advanced(FUZZER)
+# option(BUILD_FUZZER_REPRODUCER "Build fuzzer reproducer programs" ON)
 
-if(FUZZER AND BUILD_FUZZER_REPRODUCER)
-    message(FATAL_ERROR "FUZZER and BUILD_FUZZER_REPRODUCER options are mutually exclusive")
-endif()
+# if(FUZZER AND BUILD_FUZZER_REPRODUCER)
+#     message(FATAL_ERROR "FUZZER and BUILD_FUZZER_REPRODUCER options are mutually exclusive")
+# endif()
 
 #TODO: USE_OGL? , USE_SDE, USE_CLUSTER_EXTERNAL USE_CLUSTER_PLUGIN, USE_MSSQL2008, USE_MSSQL2008_PLUGIN
 # SIGNORE_MISSING_DATA, CGI_CL_DEBUG_ARGS, EXTRA DEBUG FLAGS?,
@@ -209,45 +212,45 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror=format-security")
 endif()
 
-if(FUZZER)
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        message(FATAL_ERROR "Need clang for libFuzzer support")
-    endif()
+# if(FUZZER)
+#     if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#         message(FATAL_ERROR "Need clang for libFuzzer support")
+#     endif()
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=fuzzer,address -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=fuzzer,address -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION")
-endif()
+#     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=fuzzer,address -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION")
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=fuzzer,address -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION")
+# endif()
 
-if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(_LIBDIR_DEFAULT "lib")
-  # Override this default 'lib' with 'lib64' iff:
-  #  - we are on Linux system but NOT cross-compiling
-  #  - we are NOT on debian
-  #  - we are on a 64 bits system
-  # reason is: amd64 ABI: http://www.x86-64.org/documentation/abi.pdf
-  # Note that the future of multi-arch handling may be even
-  # more complicated than that: http://wiki.debian.org/Multiarch
-  if(CMAKE_SYSTEM_NAME MATCHES "Linux"
-      AND NOT CMAKE_CROSSCOMPILING
-      AND NOT EXISTS "/etc/debian_version")
-    if(NOT DEFINED CMAKE_SIZEOF_VOID_P)
-      message(AUTHOR_WARNING
-        "Unable to determine default CMAKE_INSTALL_LIBDIR directory because no target architecture is known. "
-        "Please enable at least one language before including GNUInstallDirs.")
-    else()
-      if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-        set(_LIBDIR_DEFAULT "lib64")
-      endif()
-    endif()
-  endif()
-  set(CMAKE_INSTALL_LIBDIR "${_LIBDIR_DEFAULT}" CACHE PATH "object code libraries (${_LIBDIR_DEFAULT})")
-endif()
+# if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+#   set(_LIBDIR_DEFAULT "lib")
+#   # Override this default 'lib' with 'lib64' iff:
+#   #  - we are on Linux system but NOT cross-compiling
+#   #  - we are NOT on debian
+#   #  - we are on a 64 bits system
+#   # reason is: amd64 ABI: http://www.x86-64.org/documentation/abi.pdf
+#   # Note that the future of multi-arch handling may be even
+#   # more complicated than that: http://wiki.debian.org/Multiarch
+#   if(CMAKE_SYSTEM_NAME MATCHES "Linux"
+#       AND NOT CMAKE_CROSSCOMPILING
+#       AND NOT EXISTS "/etc/debian_version")
+#     if(NOT DEFINED CMAKE_SIZEOF_VOID_P)
+#       message(AUTHOR_WARNING
+#         "Unable to determine default CMAKE_INSTALL_LIBDIR directory because no target architecture is known. "
+#         "Please enable at least one language before including GNUInstallDirs.")
+#     else()
+#       if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+#         set(_LIBDIR_DEFAULT "lib64")
+#       endif()
+#     endif()
+#   endif()
+#   set(CMAKE_INSTALL_LIBDIR "${_LIBDIR_DEFAULT}" CACHE PATH "object code libraries (${_LIBDIR_DEFAULT})")
+# endif()
 
-if(NOT DEFINED CMAKE_INSTALL_RPATH)
-  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-endif()
-SET(CMAKE_MACOSX_RPATH ON)
+# if(NOT DEFINED CMAKE_INSTALL_RPATH)
+#   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+#   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# endif()
+# SET(CMAKE_MACOSX_RPATH ON)
 
 if(LINK_STATIC_LIBMAPSERVER)
   set(BUILD_STATIC 1)
@@ -402,30 +405,30 @@ endif(BUILD_STATIC)
 #the SOVERSION to be incremented. Similar rules hold of course for
 #non-opaque data-structures.
 
-if( NOT FUZZER )
-add_executable(mapserv src/apps/mapserv.c)
-target_link_libraries(mapserv ${MAPSERVER_LIBMAPSERVER})
-add_executable(map2img src/apps/map2img.c)
-target_link_libraries(map2img ${MAPSERVER_LIBMAPSERVER})
-add_executable(shptree src/apps/shptree.c)
-target_link_libraries(shptree ${MAPSERVER_LIBMAPSERVER})
-add_executable(coshp src/apps/coshp.c)
-target_link_libraries(coshp ${MAPSERVER_LIBMAPSERVER})
-add_executable(shptreevis src/apps/shptreevis.c)
-target_link_libraries(shptreevis ${MAPSERVER_LIBMAPSERVER})
-add_executable(sortshp src/apps/sortshp.c)
-target_link_libraries(sortshp ${MAPSERVER_LIBMAPSERVER})
-add_executable(legend src/apps/legend.c)
-target_link_libraries(legend ${MAPSERVER_LIBMAPSERVER})
-add_executable(scalebar src/apps/scalebar.c)
-target_link_libraries(scalebar ${MAPSERVER_LIBMAPSERVER})
-add_executable(msencrypt src/apps/msencrypt.c)
-target_link_libraries(msencrypt ${MAPSERVER_LIBMAPSERVER})
-add_executable(tile4ms src/apps/tile4ms.c)
-target_link_libraries(tile4ms ${MAPSERVER_LIBMAPSERVER})
-add_executable(shptreetst src/apps/shptreetst.c)
-target_link_libraries(shptreetst ${MAPSERVER_LIBMAPSERVER})
-endif()
+# if( NOT FUZZER )
+# add_executable(mapserv src/apps/mapserv.c)
+# target_link_libraries(mapserv ${MAPSERVER_LIBMAPSERVER})
+# add_executable(map2img src/apps/map2img.c)
+# target_link_libraries(map2img ${MAPSERVER_LIBMAPSERVER})
+# add_executable(shptree src/apps/shptree.c)
+# target_link_libraries(shptree ${MAPSERVER_LIBMAPSERVER})
+# add_executable(coshp src/apps/coshp.c)
+# target_link_libraries(coshp ${MAPSERVER_LIBMAPSERVER})
+# add_executable(shptreevis src/apps/shptreevis.c)
+# target_link_libraries(shptreevis ${MAPSERVER_LIBMAPSERVER})
+# add_executable(sortshp src/apps/sortshp.c)
+# target_link_libraries(sortshp ${MAPSERVER_LIBMAPSERVER})
+# add_executable(legend src/apps/legend.c)
+# target_link_libraries(legend ${MAPSERVER_LIBMAPSERVER})
+# add_executable(scalebar src/apps/scalebar.c)
+# target_link_libraries(scalebar ${MAPSERVER_LIBMAPSERVER})
+# add_executable(msencrypt src/apps/msencrypt.c)
+# target_link_libraries(msencrypt ${MAPSERVER_LIBMAPSERVER})
+# add_executable(tile4ms src/apps/tile4ms.c)
+# target_link_libraries(tile4ms ${MAPSERVER_LIBMAPSERVER})
+# add_executable(shptreetst src/apps/shptreetst.c)
+# target_link_libraries(shptreetst ${MAPSERVER_LIBMAPSERVER})
+# endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug") 
   set(USE_EXTENDED_DEBUG 1)
@@ -436,6 +439,7 @@ include_directories(/home/alexander/work/projects/smartio/build/include)
 include_directories(/home/alexander/work/projects/smartio/build/include/IOItem)
 ms_link_libraries(/home/alexander/work/projects/smartio/build/linux-g++/lib/libsmartIO-data.so)
 ms_link_libraries(/home/alexander/work/projects/smartio/build/linux-g++/lib/libsmartIO-core.so)
+#
 
 find_package(PNG)
 if(PNG_FOUND)
@@ -904,9 +908,9 @@ if(WITH_CSHARP)
    set(USE_CSHARP_MAPSCRIPT 1)
 endif(WITH_CSHARP)
 
-if(FUZZER OR BUILD_FUZZER_REPRODUCER)
-add_subdirectory("fuzzers")
-endif()
+# if(FUZZER OR BUILD_FUZZER_REPRODUCER)
+# add_subdirectory("fuzzers")
+# endif()
 
 if(UNIX)
 ms_link_libraries( ${CMAKE_DL_LIBS} m )
@@ -1020,8 +1024,8 @@ status_optional_feature("Python MapScript Annotations" "${WITH_PYMAPSCRIPT_ANNOT
 
 message(STATUS "")
 message(STATUS "PROJECT_BINARY_DIR is set to ${PROJECT_BINARY_DIR}")
-message(STATUS "Will install files to ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Will install libraries to ${INSTALL_LIB_DIR}")
+# message(STATUS "Will install files to ${CMAKE_INSTALL_PREFIX}")
+# message(STATUS "Will install libraries to ${INSTALL_LIB_DIR}")
 
 
 include_directories("${PROJECT_BINARY_DIR}")
@@ -1032,33 +1036,33 @@ set(USE_GENERIC_MS_NINT 1)
 endif(WIN32)
 
 
-#INSTALL(FILES mapserver-api.h ${PROJECT_BINARY_DIR}/mapserver-version.h DESTINATION include)
-if(USE_ORACLE_PLUGIN)
-   INSTALL(TARGETS msplugin_oracle DESTINATION ${INSTALL_LIB_DIR})
-endif(USE_ORACLE_PLUGIN)
+# #INSTALL(FILES mapserver-api.h ${PROJECT_BINARY_DIR}/mapserver-version.h DESTINATION include)
+# if(USE_ORACLE_PLUGIN)
+#    INSTALL(TARGETS msplugin_oracle DESTINATION ${INSTALL_LIB_DIR})
+# endif(USE_ORACLE_PLUGIN)
 
-if(USE_MSSQL2008)
-   INSTALL(TARGETS msplugin_mssql2008 DESTINATION ${INSTALL_LIB_DIR})
-endif(USE_MSSQL2008)
+# if(USE_MSSQL2008)
+#    INSTALL(TARGETS msplugin_mssql2008 DESTINATION ${INSTALL_LIB_DIR})
+# endif(USE_MSSQL2008)
 
-if(NOT FUZZER)
-    INSTALL(TARGETS coshp sortshp shptree shptreevis msencrypt legend scalebar tile4ms shptreetst map2img mapserv
-            RUNTIME DESTINATION ${INSTALL_BIN_DIR} COMPONENT bin
-    )
-endif()
+# if(NOT FUZZER)
+#     INSTALL(TARGETS coshp sortshp shptree shptreevis msencrypt legend scalebar tile4ms shptreetst map2img mapserv
+#             RUNTIME DESTINATION ${INSTALL_BIN_DIR} COMPONENT bin
+#     )
+# endif()
 
-if(BUILD_STATIC)
-   INSTALL(TARGETS mapserver_static
-           DESTINATION ${INSTALL_LIB_DIR} COMPONENT staticlib
-   )
-endif(BUILD_STATIC)
+# if(BUILD_STATIC)
+#    INSTALL(TARGETS mapserver_static
+#            DESTINATION ${INSTALL_LIB_DIR} COMPONENT staticlib
+#    )
+# endif(BUILD_STATIC)
 if(BUILD_DYNAMIC)
-   INSTALL(TARGETS mapserver
-           EXPORT mapserverTargets
-           ARCHIVE DESTINATION ${INSTALL_LIB_DIR} COMPONENT shlib
-           LIBRARY DESTINATION ${INSTALL_LIB_DIR} COMPONENT shlib
-           PUBLIC_HEADER DESTINATION ${INSTALL_INCLUDE_DIR}/mapserver COMPONENT dev
-   )
+   # INSTALL(TARGETS mapserver
+   #         EXPORT mapserverTargets
+   #         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} COMPONENT shlib
+   #         LIBRARY DESTINATION ${INSTALL_LIB_DIR} COMPONENT shlib
+   #         PUBLIC_HEADER DESTINATION ${INSTALL_INCLUDE_DIR}/mapserver COMPONENT dev
+   # )
 
    # Add all targets to the build-tree export set
    export(TARGETS mapserver
@@ -1074,8 +1078,8 @@ if(BUILD_DYNAMIC)
 
    list(REMOVE_DUPLICATES ALL_INCLUDE_DIRS)
 
-   # Create the mapserver-config.cmake and mapserver-config-version files
-   file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${ALL_INCLUDE_DIRS}")
+   # # Create the mapserver-config.cmake and mapserver-config-version files
+   # file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${ALL_INCLUDE_DIRS}")
 
    # ... for the build tree
    set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
@@ -1088,16 +1092,16 @@ if(BUILD_DYNAMIC)
    # ... for both
    configure_file(src/mapserver-config-version.cmake.in "${PROJECT_BINARY_DIR}/mapserver-config-version.cmake" @ONLY)
 
-   # Install the mapserver-config.cmake and mapserver-config-version.cmake
-   install(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mapserver-config.cmake"
-                 "${PROJECT_BINARY_DIR}/mapserver-config-version.cmake"
-           DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev
-   )
+   # # Install the mapserver-config.cmake and mapserver-config-version.cmake
+   # install(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mapserver-config.cmake"
+   #               "${PROJECT_BINARY_DIR}/mapserver-config-version.cmake"
+   #         DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev
+   # )
 
-   # Install the export set for use with the install-tree
-   install(EXPORT mapserverTargets
-           DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev
-   )
+   # # Install the export set for use with the install-tree
+   # install(EXPORT mapserverTargets
+   #         DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev
+   # )
 endif(BUILD_DYNAMIC)
 
 if(UNIX)
@@ -1108,45 +1112,45 @@ else()
 endif()
 set(DEFAULT_CONFIG_FILE ${CMAKE_INSTALL_FULL_SYSCONFDIR}/mapserver.conf)
 
-# Locations are changeable by user to customize layout of MapServer installation
-# (default values are platform-specific)
-set(MAPSERVER_DATA_SUBDIR ${DEFAULT_DATA_SUBDIR} CACHE STRING
-  "Subdirectory where data will be installed")
+# # Locations are changeable by user to customize layout of MapServer installation
+# # (default values are platform-specific)
+# set(MAPSERVER_DATA_SUBDIR ${DEFAULT_DATA_SUBDIR} CACHE STRING
+#   "Subdirectory where data will be installed")
 
-set(MAPSERVER_CONFIG_FILE "${DEFAULT_CONFIG_FILE}" CACHE STRING
-  "Full file name for default configuration file (mapserver.conf)")
+# set(MAPSERVER_CONFIG_FILE "${DEFAULT_CONFIG_FILE}" CACHE STRING
+#   "Full file name for default configuration file (mapserver.conf)")
 
-# Mark *DIR variables as advanced and dedicated to use by power-users only.
-mark_as_advanced(
-  MAPSERVER_DATA_SUBDIR
-  MAPSERVER_CONFIG_FILE
-)
-add_definitions(-DMAPSERVER_BUILD)
-add_definitions(-DMAPSERVER_CONFIG_FILE="${MAPSERVER_CONFIG_FILE}")
+# # Mark *DIR variables as advanced and dedicated to use by power-users only.
+# mark_as_advanced(
+#   MAPSERVER_DATA_SUBDIR
+#   MAPSERVER_CONFIG_FILE
+# )
+# add_definitions(-DMAPSERVER_BUILD)
+# add_definitions(-DMAPSERVER_CONFIG_FILE="${MAPSERVER_CONFIG_FILE}")
 
-install(
-  FILES ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection-item.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection-items.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collections.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/conformance.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/debug.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/footer.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/header.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/landing.html
-        ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/openapi.html
-  DESTINATION ${MAPSERVER_DATA_SUBDIR}/ogcapi/templates/html-plain/
-)
+# install(
+#   FILES ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection-item.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collection-items.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/collections.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/conformance.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/debug.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/footer.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/header.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/landing.html
+#         ${PROJECT_SOURCE_DIR}/share/ogcapi/templates/html-plain/openapi.html
+#   DESTINATION ${MAPSERVER_DATA_SUBDIR}/ogcapi/templates/html-plain/
+# )
 
-install(
-  FILES ${PROJECT_SOURCE_DIR}/etc/mapserver-sample.conf
-  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/
-)
+# install(
+#   FILES ${PROJECT_SOURCE_DIR}/etc/mapserver-sample.conf
+#   DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/
+# )
 
-option(BUILD_TESTING "Build unit test" ON)
-if(BUILD_DYNAMIC AND BUILD_TESTING)
-    enable_testing()
-    add_executable(unit_test tests/unit/test.cpp)
-    target_link_libraries(unit_test PRIVATE mapserver)
-    add_test(NAME unit_test COMMAND unit_test)
-endif()
+# option(BUILD_TESTING "Build unit test" ON)
+# if(BUILD_DYNAMIC AND BUILD_TESTING)
+#     enable_testing()
+#     add_executable(unit_test tests/unit/test.cpp)
+#     target_link_libraries(unit_test PRIVATE mapserver)
+#     add_test(NAME unit_test COMMAND unit_test)
+# endif()
